@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Trying to circumevent the caching problems -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <title>Markdown Page</title>
+
+    <!-- Bootstrap 5.3 CSS (replace with local path: /css/bootstrap.min.css) -->
+    <!--link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous"-->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/5.3.8/flatly/bootstrap.min.css"
+        integrity="sha512-6cPfXE7P+s3gLoNVw8XfKNI3nc0kKcDIhZzlFp81ZLRcueIq2ayKiHcT9YT7Z+q0+61MKhvVaSaV5PmG7jEsKA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+        <link rel="stylesheet" type="text/css"
+        href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" />
+    <link href="css/style.css" rel="stylesheet">
+
+
+</head>
+
+<body>
+    <!-- Main Content -->
+    <div class="container-lg pt-4">
+        <div id="loading-spinner" class="d-none" style="text-align: center; padding: 50px;">
+            <i class="ph ph-spinner-gap" style="font-size: 42px;"></i>
+        </div>
+        <div id="main-content"></div>
+    </div>
+
+    <!-- Scripts and JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/showdown@2.1.0/dist/showdown.min.js"></script>
+
+    <!-- Markdown Loading Script -->
+    <script>
+        // Get URL parameter by name
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            const results = regex.exec(location.search);
+            return results === null ? 'data/index.md' : decodeURIComponent(results[1]);
+        }
+
+        // Load and render markdown content
+        async function loadMarkdown() {
+            const filename = getUrlParameter('d');
+            const url = filename;
+
+            // Show spinner
+            document.getElementById('loading-spinner').classList.remove('d-none');
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('File not found');
+
+                let markdownText = await response.text();
+                markdownText = markdownText.replace(/\[([^\]]+)\](?!\s*\(.*?\))/g, '[$1](?d=data/$1.md)'); // [name] -> ?d=data/name.md
+                const converter = new showdown.Converter({ tables: true, encodeEmails: true });
+                const htmlContent = converter.makeHtml(markdownText);
+
+                // Hide spinner and show content
+                document.getElementById('main-content').innerHTML = htmlContent;
+                document.getElementById('loading-spinner').classList.add('d-none');
+            } catch (error) {
+                console.error('Error loading markdown:', error);
+                document.getElementById('loading-spinner').classList.add('d-none');
+                document.getElementById('main-content').innerHTML =
+                    '<p style="color: red;">Error loading content: ' + filename + '</p>';
+            }
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', loadMarkdown);
+    </script>
+
+</body>
