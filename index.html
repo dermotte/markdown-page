@@ -20,7 +20,7 @@
         integrity="sha512-6cPfXE7P+s3gLoNVw8XfKNI3nc0kKcDIhZzlFp81ZLRcueIq2ayKiHcT9YT7Z+q0+61MKhvVaSaV5PmG7jEsKA=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-        <link rel="stylesheet" type="text/css"
+    <link rel="stylesheet" type="text/css"
         href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" />
     <link href="css/style.css" rel="stylesheet">
 
@@ -65,7 +65,31 @@
                 if (!response.ok) throw new Error('File not found');
 
                 let markdownText = await response.text();
-                markdownText = markdownText.replace(/\[([^\]]+)\](?!\s*\(.*?\))/g, '[$1](?d=data/$1.md)'); // [name] -> ?d=data/name.md
+                
+                // ===== MARKDOWN CONVERSION ROUTINES =====
+                // All conversions transform relative paths to work with the data/ directory structure
+                
+                // 1. Convert links without explicit URL format: [name] -> [name](?d=data/name.md)
+                markdownText = markdownText.replace(/\[([^\]]+)\](?!\s*\(.*?\))/g, '[$1](?d=data/$1.md)');
+                
+                // 2. Convert explicit markdown links to ?d=data/ format for .md files
+                //    [text](about.md) -> [text](?d=data/about.md)
+                //    [text](subfolder/page.md) -> [text](?d=data/page.md)
+                markdownText = markdownText.replace(/\[([^\]]+)\]\(([^)]+\.md)\)/g, (match, text, src) => {
+                    const filename = src.split('/').pop();
+                    return `[${text}](?d=data/${filename})`;
+                });
+                
+                // 3. Convert relative image paths to data/ directory
+                //    ![alt](images/sample.png) -> ![alt](data/images/sample.png)
+                markdownText = markdownText.replace(/!\[([^\]]+)\]\(([^)]+)\)/g, (match, alt, src) => {
+                    // Only convert relative paths (not absolute paths or external URLs)
+                    if (!src.startsWith('/') && !src.startsWith('http://') && !src.startsWith('https://') && !src.startsWith('data:')) {
+                        return `![${alt}](data/${src})`;
+                    }
+                    return match;
+                });
+
                 const converter = new showdown.Converter({ tables: true, encodeEmails: true });
                 const htmlContent = converter.makeHtml(markdownText);
 

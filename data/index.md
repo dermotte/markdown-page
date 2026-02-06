@@ -8,6 +8,7 @@ A comprehensive guide to markdown formatting.
 
 Here is a list
 
+- [About-with-link](about.md)
 - [About]
 - [Duck.ai](http://duck.ai)
 
@@ -64,16 +65,6 @@ Numbered lists for step-by-step instructions:
 1. First step
 2. Second step
 3. Third step
-
-### Task Lists
-
-Create checkboxes for tracking progress:
-
-- [ ] Task one - not started
-- [x] Task two - completed
-- [ ] Task three - pending
-  - [ ] Subtask a
-  - [x] Subtask b - done
 
 ---
 
@@ -175,10 +166,6 @@ print(fibonacci(10))
 - [Duck.ai](http://duck.ai) - AI-powered search engine
 - [Wikipedia](https://www.wikipedia.org) - The Free Encyclopedia
 
-### Internal Links
-
-- [Back to Top](#start-here)
-- [Quick Navigation](#quick-navigation)
 
 ### Email Links
 
@@ -188,14 +175,9 @@ Contact us at: [hello@example.com](mailto:hello@example.com)
 
 ## Images
 
-### Local Image (Placeholder)
+### Local Image
 
-![Logo](https://via.placeholder.com/150/0000FF/808080?text=Sample+Image)
-
-### Image with Title
-
-![Sample Image](https://via.placeholder.com/300/FF0000/FFFFFF?text=Sample)
-"Sample image with title"
+![Diagram](images/sample.png)
 
 ---
 
