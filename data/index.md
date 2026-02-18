@@ -57,6 +57,9 @@ Create bullet point lists:
 - Third item
   - Nested item 1
   - Nested item 2
+  - Nested item 3
+  - Nested item 4
+- Fourth item
 
 ### Ordered Lists
 
